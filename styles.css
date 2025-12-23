@@ -1,33 +1,22 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
-:root {
-    --accent: #1ED760;
-    --bg-dark: #0B1A0E;
-    --card-bg: rgba(255, 255, 255, 0.05);
-}
+/* styles.css */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
 
 body {
     font-family: 'Inter', sans-serif;
-    background-color: var(--bg-dark);
-    -webkit-tap-highlight-color: transparent;
+    -webkit-tap-highlight-color: transparent; /* Removes blue highlight on mobile tap */
 }
 
-.animal-card {
-    transition: transform 0.2s ease;
-    cursor: pointer;
+/* Hide Scrollbar but allow scrolling */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 
-.animal-card:active {
-    transform: scale(0.95);
-}
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-    width: 0px;
-}
-
-/* Smooth Transitions */
-#view-container {
+/* Transitions */
+.view-section {
     animation: fadeIn 0.3s ease-in-out;
 }
 
@@ -36,20 +25,15 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Modal Slide Up */
+/* Modal Slide Up Animation */
 #modal-content {
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.btn-primary {
-    background-color: var(--accent);
-    color: black;
-    font-weight: 700;
-    border-radius: 1rem;
-    padding: 1rem;
-    transition: opacity 0.2s;
-}
-
-.btn-primary:active {
-    opacity: 0.8;
+/* Glassmorphism utilities if needed */
+.glass {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
