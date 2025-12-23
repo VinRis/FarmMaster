@@ -4,120 +4,235 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Farm Manager Pro</title>
-    <link rel="stylesheet" href="styles.css">
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     <link rel="stylesheet" href="styles.css">
-</head>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+    </head>
 <body class="bg-[#0B1A0E] text-white font-sans pb-24">
 
-    <section id="screen-welcome" class="p-6 min-h-screen flex flex-col">
+    <section id="screen-welcome" class="p-6 min-h-screen flex flex-col transition-opacity duration-500">
         <header class="mb-8 mt-4">
             <h1 class="text-3xl font-bold">Good Morning, Farmer</h1>
             <p class="text-gray-400">Which livestock are you managing today?</p>
         </header>
 
         <div class="grid grid-cols-2 gap-4 mb-8">
-            <div onclick="selectLivestock('dairy')" class="animal-card relative overflow-hidden rounded-3xl aspect-[4/5] bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1546445317-29f4545e9d53?auto=format&fit=crop&q=80&w=400')">
+            <div onclick="window.selectLivestock('dairy')" class="animal-card cursor-pointer active:scale-95 transition-transform relative overflow-hidden rounded-3xl aspect-[4/5] bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1546445317-29f4545e9d53?auto=format&fit=crop&q=80&w=400')">
                 <div class="absolute inset-0 bg-black/40 p-4 flex flex-col justify-end">
+                    <div class="bg-green-500/20 w-8 h-8 rounded-full flex items-center justify-center mb-2 backdrop-blur-sm">
+                        <i data-lucide="milk" class="w-4 h-4 text-[#1ED760]"></i>
+                    </div>
                     <h3 class="font-bold text-lg">Dairy Cattle</h3>
                     <p class="text-xs text-gray-200">Manage Milk & Health</p>
                 </div>
             </div>
-            <div onclick="selectLivestock('poultry')" class="animal-card relative overflow-hidden rounded-3xl aspect-[4/5] bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?auto=format&fit=crop&q=80&w=400')">
+            <div onclick="window.selectLivestock('poultry')" class="animal-card cursor-pointer active:scale-95 transition-transform relative overflow-hidden rounded-3xl aspect-[4/5] bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?auto=format&fit=crop&q=80&w=400')">
                 <div class="absolute inset-0 bg-black/40 p-4 flex flex-col justify-end">
+                    <div class="bg-yellow-500/20 w-8 h-8 rounded-full flex items-center justify-center mb-2 backdrop-blur-sm">
+                        <i data-lucide="egg" class="w-4 h-4 text-yellow-500"></i>
+                    </div>
                     <h3 class="font-bold text-lg">Poultry</h3>
                     <p class="text-xs text-gray-200">Layers & Broilers</p>
                 </div>
             </div>
-            <div onclick="selectLivestock('pigs')" class="animal-card relative overflow-hidden rounded-3xl aspect-[4/5] bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1544233726-9f1d2b27be8b?auto=format&fit=crop&q=80&w=400')">
-                <div class="absolute inset-0 bg-black/40 p-4 flex flex-col justify-end">
-                    <h3 class="font-bold text-lg">Piggery</h3>
-                    <p class="text-xs text-gray-200">Breeding & Fattening</p>
-                </div>
             </div>
-            <div onclick="selectLivestock('goats')" class="animal-card relative overflow-hidden rounded-3xl aspect-[4/5] bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1524024973431-2ad916746881?auto=format&fit=crop&q=80&w=400')">
-                <div class="absolute inset-0 bg-black/40 p-4 flex flex-col justify-end">
-                    <h3 class="font-bold text-lg">Goats & Sheep</h3>
-                    <p class="text-xs text-gray-200">Small Ruminants</p>
-                </div>
-            </div>
-        </div>
 
         <div class="mt-auto space-y-3">
             <div class="bg-zinc-900/50 p-4 rounded-2xl flex items-center justify-between border border-white/5">
                 <div>
                     <p class="text-sm font-medium">Last Sync Status</p>
-                    <p class="text-xs text-gray-500">Everything up to date</p>
+                    <p class="text-xs text-gray-500" id="sync-status-text">Not logged in</p>
                 </div>
-                <button class="text-[#1ED760] font-bold text-sm">Sync Now</button>
+                <button onclick="window.handleLogin()" class="text-[#1ED760] font-bold text-sm">Sync Now</button>
             </div>
-            <div class="grid grid-cols-2 gap-3">
-                <button onclick="authAction('login')" class="bg-zinc-800 p-4 rounded-2xl flex items-center justify-center gap-2">
-                    <i data-lucide="cloud-upload" class="w-4 h-4"></i> Backup
-                </button>
-                <button class="bg-zinc-800 p-4 rounded-2xl flex items-center justify-center gap-2">
-                    <i data-lucide="refresh-cw" class="w-4 h-4"></i> Restore
-                </button>
-            </div>
-            <button onclick="showAuthModal()" class="w-full text-center text-sm py-2 text-[#1ED760]">Already have an account? Log in to Sync</button>
         </div>
     </section>
 
     <main id="app-shell" class="hidden min-h-screen">
-        <div id="view-container" class="p-6">
+        
+        <div class="px-6 pt-6 flex justify-between items-center">
+            <div>
+                <h1 class="text-xl font-bold" id="farm-title">Green Acres Farm</h1>
+                <p class="text-xs text-gray-400 flex items-center gap-1">
+                    <i data-lucide="map-pin" class="w-3 h-3"></i> <span id="farm-location">Vermont, USA</span>
+                </p>
+            </div>
+            <div class="w-10 h-10 bg-zinc-800 rounded-full flex items-center justify-center">
+                <i data-lucide="user" class="w-5 h-5"></i>
+            </div>
+        </div>
+
+        <div id="view-container" class="p-6 pb-32">
+            
+            <div id="dashboard-view" class="view-section">
+                <div class="flex gap-2 overflow-x-auto pb-4 no-scrollbar">
+                    <button class="bg-[#1ED760] text-black px-4 py-1.5 rounded-full text-sm font-bold whitespace-nowrap">All</button>
+                    <button class="bg-zinc-800 text-white px-4 py-1.5 rounded-full text-sm whitespace-nowrap">Dairy</button>
+                    <button class="bg-zinc-800 text-white px-4 py-1.5 rounded-full text-sm whitespace-nowrap">Poultry</button>
+                </div>
+
+                <h2 class="text-lg font-bold mb-3">Key Metrics</h2>
+                <div class="grid grid-cols-2 gap-3 mb-6">
+                    <div class="bg-zinc-900 p-4 rounded-2xl border border-white/5">
+                        <div class="bg-blue-500/20 w-8 h-8 rounded-lg flex items-center justify-center mb-2">
+                            <i data-lucide="paw-print" class="w-4 h-4 text-blue-500"></i>
+                        </div>
+                        <p class="text-xs text-gray-400">TOTAL HERD</p>
+                        <p class="text-2xl font-bold">145</p>
+                    </div>
+                    <div class="bg-zinc-900 p-4 rounded-2xl border border-white/5">
+                        <div class="bg-green-500/20 w-8 h-8 rounded-lg flex items-center justify-center mb-2">
+                            <i data-lucide="droplet" class="w-4 h-4 text-[#1ED760]"></i>
+                        </div>
+                        <p class="text-xs text-gray-400">DAILY YIELD</p>
+                        <p class="text-2xl font-bold">2,400L</p>
+                    </div>
+                </div>
+
+                <div class="bg-zinc-900 p-4 rounded-2xl border border-white/5 mb-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-bold flex items-center gap-2"><i data-lucide="heart-pulse" class="text-red-500 w-4 h-4"></i> Herd Health</h3>
+                        <span class="text-xs text-gray-500">Updated 10m ago</span>
+                    </div>
+                    <div class="w-full bg-zinc-800 h-2 rounded-full overflow-hidden flex mb-2">
+                        <div class="bg-[#1ED760] w-[90%]"></div>
+                        <div class="bg-orange-500 w-[5%]"></div>
+                        <div class="bg-red-500 w-[5%]"></div>
+                    </div>
+                    <div class="flex justify-between text-xs text-gray-400">
+                        <span>Healthy: 142</span>
+                        <span>Monitoring: 2</span>
+                        <span>Sick: 1</span>
+                    </div>
+                </div>
             </div>
 
-        <nav class="fixed bottom-0 left-0 right-0 bg-[#0B1A0E]/90 backdrop-blur-lg border-t border-white/5 px-6 py-3 flex justify-between items-center z-40">
-            <button onclick="switchView('dashboard')" class="nav-item flex flex-col items-center text-xs gap-1 text-[#1ED760]">
+            <div id="history-view" class="view-section hidden">
+                <div class="bg-zinc-900 rounded-xl p-3 flex items-center gap-2 mb-4">
+                    <i data-lucide="search" class="text-gray-400 w-4 h-4"></i>
+                    <input type="text" placeholder="Search records..." class="bg-transparent w-full outline-none text-sm">
+                </div>
+                
+                <h3 class="text-gray-400 text-xs font-bold mb-3 uppercase tracking-wider">Today</h3>
+                <div id="history-list">
+                    <div class="bg-zinc-900/50 p-4 rounded-2xl mb-3 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="bg-blue-500/20 p-2 rounded-xl text-blue-500"><i data-lucide="droplet" class="w-5 h-5"></i></div>
+                            <div>
+                                <h4 class="font-bold text-sm">Milk Yield - Cow #402</h4>
+                                <p class="text-xs text-gray-500">Dairy Barn • Shift A</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-bold text-[#1ED760]">24 L</p>
+                            <p class="text-xs text-gray-500">06:30 AM</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="finance-view" class="view-section hidden">
+                <div class="bg-zinc-900 p-6 rounded-3xl mb-6 relative overflow-hidden">
+                    <div class="relative z-10">
+                        <p class="text-gray-400 text-sm">Net Profit</p>
+                        <h2 class="text-3xl font-bold my-1">$12,450.00</h2>
+                        <span class="bg-green-500/20 text-[#1ED760] text-xs px-2 py-1 rounded">+12% vs last month</span>
+                    </div>
+                    <i data-lucide="piggy-bank" class="absolute right-4 bottom-4 w-24 h-24 text-zinc-800 -rotate-12"></i>
+                </div>
+                
+                <div class="flex gap-2 mb-6">
+                    <div class="flex-1 bg-zinc-900 p-3 rounded-2xl">
+                        <p class="text-xs text-gray-400 mb-1">Income</p>
+                        <p class="font-bold text-lg text-[#1ED760]">$15,000</p>
+                    </div>
+                    <div class="flex-1 bg-zinc-900 p-3 rounded-2xl">
+                        <p class="text-xs text-gray-400 mb-1">Expenses</p>
+                        <p class="font-bold text-lg text-red-400">$2,550</p>
+                    </div>
+                </div>
+
+                <h3 class="font-bold mb-3">Recent Transactions</h3>
+                <div id="finance-list">
+                    </div>
+            </div>
+
+            <div id="health-view" class="view-section hidden">
+                 <h2 class="text-xl font-bold mb-4">Health Schedule</h2>
+                 <div class="bg-zinc-900 p-4 rounded-2xl border border-red-500/20 mb-4">
+                    <span class="bg-red-500/20 text-red-500 text-xs px-2 py-1 rounded">Due in 2 days</span>
+                    <h3 class="font-bold mt-2">De-worming</h3>
+                    <p class="text-sm text-gray-400">Pigs • Pen 4</p>
+                 </div>
+            </div>
+            
+            <div id="settings-view" class="view-section hidden">
+                <h2 class="text-xl font-bold mb-4">Settings</h2>
+                <div class="bg-zinc-900 rounded-2xl overflow-hidden">
+                    <div class="p-4 flex justify-between items-center border-b border-white/5">
+                        <span>Dark Mode</span>
+                        <div class="w-10 h-6 bg-[#1ED760] rounded-full relative"><div class="absolute right-1 top-1 w-4 h-4 bg-white rounded-full"></div></div>
+                    </div>
+                    <div class="p-4 flex justify-between items-center">
+                        <span class="text-red-500">Log Out</span>
+                        <i data-lucide="log-out" class="w-4 h-4 text-red-500"></i>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <nav class="fixed bottom-0 left-0 right-0 bg-[#0B1A0E]/95 backdrop-blur-lg border-t border-white/5 px-6 py-3 flex justify-between items-center z-40 pb-6">
+            <button onclick="window.switchView('dashboard')" class="nav-item flex flex-col items-center text-xs gap-1 text-[#1ED760]" id="nav-dashboard">
                 <i data-lucide="layout-grid" class="w-6 h-6"></i> Dashboard
             </button>
-            <button onclick="switchView('history')" class="nav-item flex flex-col items-center text-xs gap-1 text-gray-500">
+            <button onclick="window.switchView('history')" class="nav-item flex flex-col items-center text-xs gap-1 text-gray-500" id="nav-history">
                 <i data-lucide="history" class="w-6 h-6"></i> History
             </button>
             
             <div class="relative -top-8">
-                <button onclick="toggleRecordModal()" class="bg-[#1ED760] text-black w-14 h-14 rounded-full flex items-center justify-center shadow-lg shadow-[#1ED760]/20">
+                <button onclick="window.toggleRecordModal()" class="bg-[#1ED760] text-black w-14 h-14 rounded-full flex items-center justify-center shadow-lg shadow-[#1ED760]/20 active:scale-90 transition-transform">
                     <i data-lucide="plus" class="w-8 h-8"></i>
                 </button>
             </div>
 
-            <button onclick="switchView('health')" class="nav-item flex flex-col items-center text-xs gap-1 text-gray-500">
-                <i data-lucide="heart-pulse" class="w-6 h-6"></i> Health
+            <button onclick="window.switchView('finance')" class="nav-item flex flex-col items-center text-xs gap-1 text-gray-500" id="nav-finance">
+                <i data-lucide="wallet" class="w-6 h-6"></i> Finance
             </button>
-            <button onclick="switchView('settings')" class="nav-item flex flex-col items-center text-xs gap-1 text-gray-500">
+            <button onclick="window.switchView('settings')" class="nav-item flex flex-col items-center text-xs gap-1 text-gray-500" id="nav-settings">
                 <i data-lucide="settings" class="w-6 h-6"></i> Settings
             </button>
         </nav>
     </main>
 
-    <div id="record-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-end">
-        <div class="w-full bg-[#121212] rounded-t-[32px] p-8 pb-12 transition-transform transform translate-y-full" id="modal-content">
+    <div id="record-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-end backdrop-blur-sm">
+        <div class="w-full bg-[#121212] rounded-t-[32px] p-8 pb-12 transition-transform transform translate-y-0" id="modal-content">
             <div class="w-12 h-1.5 bg-zinc-700 rounded-full mx-auto mb-8"></div>
             <h2 class="text-2xl font-bold mb-2">New Record</h2>
             <p class="text-gray-400 mb-8">What would you like to log today?</p>
             
             <div class="space-y-4">
-                <button onclick="openForm('production')" class="w-full bg-zinc-900 p-5 rounded-2xl flex items-center gap-4 text-left border border-white/5">
+                <button onclick="window.openForm('production')" class="w-full bg-zinc-900 p-5 rounded-2xl flex items-center gap-4 text-left border border-white/5 hover:bg-zinc-800 active:scale-98 transition-all">
                     <div class="bg-green-500/20 p-3 rounded-xl text-green-500"><i data-lucide="package"></i></div>
                     <div>
                         <p class="font-bold">Production Record</p>
                         <p class="text-xs text-gray-500">Log milk, eggs, or weight gain</p>
                     </div>
                 </button>
-                <button onclick="openForm('finance')" class="w-full bg-zinc-900 p-5 rounded-2xl flex items-center gap-4 text-left border border-white/5">
+                <button onclick="window.openForm('finance')" class="w-full bg-zinc-900 p-5 rounded-2xl flex items-center gap-4 text-left border border-white/5 hover:bg-zinc-800 active:scale-98 transition-all">
                     <div class="bg-blue-500/20 p-3 rounded-xl text-blue-500"><i data-lucide="dollar-sign"></i></div>
                     <div>
                         <p class="font-bold">Financial Transaction</p>
                         <p class="text-xs text-gray-500">Record sales or feed expenses</p>
                     </div>
                 </button>
-                <button onclick="openForm('health')" class="w-full bg-zinc-900 p-5 rounded-2xl flex items-center gap-4 text-left border border-white/5">
+                <button onclick="window.openForm('health')" class="w-full bg-zinc-900 p-5 rounded-2xl flex items-center gap-4 text-left border border-white/5 hover:bg-zinc-800 active:scale-98 transition-all">
                     <div class="bg-red-500/20 p-3 rounded-xl text-red-500"><i data-lucide="stethoscope"></i></div>
                     <div>
                         <p class="font-bold">Health Record</p>
@@ -125,10 +240,31 @@
                     </div>
                 </button>
             </div>
-            <button onclick="toggleRecordModal()" class="w-full mt-8 text-gray-400 font-medium">Cancel</button>
+            <button onclick="window.toggleRecordModal()" class="w-full mt-8 text-gray-400 font-medium py-4">Cancel</button>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <div id="form-modal" class="fixed inset-0 bg-[#121212] z-[60] hidden overflow-y-auto">
+        <div class="p-6">
+            <div class="flex items-center gap-4 mb-8">
+                <button onclick="document.getElementById('form-modal').style.display='none'" class="bg-zinc-800 p-2 rounded-full"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>
+                <h2 class="text-xl font-bold" id="form-title">Add Record</h2>
+            </div>
+            
+            <form id="active-data-form" class="space-y-6">
+                <div id="form-fields"></div>
+                
+                <button type="submit" class="w-full bg-[#1ED760] text-black font-bold p-4 rounded-xl mt-8">Save Record</button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module" src="./js/app.js"></script>
+    <script>
+        // Init Icons
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+        });
+    </script>
 </body>
 </html>
