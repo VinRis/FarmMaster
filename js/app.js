@@ -54,6 +54,18 @@ function setupLivestockSelection() {
     });
 }
 
+function exportToCSV(data, filename) {
+    const csvContent = "data:text/csv;charset=utf-8," 
+        + data.map(e => Object.values(e).join(",")).join("\n");
+        
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
+}
+
 // Data Loading (Example for Finance)
 async function loadFinanceData() {
     if (!currentUser) return; // Handle offline/local mode here if needed
